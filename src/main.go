@@ -76,10 +76,9 @@ func main() {
 				fmt.Println("Error turning off Shelly plug:", err)
 				continue
 			}
-			fmt.Println("Waiting for 2 minutes to let devices boot...")
+			fmt.Println("Waiting for 5 minutes before checking again...")
 			time.Sleep(2 * time.Minute)
 		}
-		fmt.Println("Waiting for 3 minutes before checking internet connection again...")
 		time.Sleep(3 * time.Minute)
 	}
 }
