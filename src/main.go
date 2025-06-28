@@ -2,27 +2,45 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"time"
 )
 
-var dnsServers = []string{
-	"https://www.cloudflarestatus.com/",
-	"https://www.githubstatus.com/",
-	"https://google.com",
+type dotServer struct {
+	IP         string
+	ServerName string
+}
+
+var dotServers = []dotServer{
+	{"1.1.1.1:853", "cloudflare-dns.com"},
+	{"8.8.8.8:853", "dns.google"},
+	{"9.9.9.9:853", "dns.quad9.net"},
+	{"185.228.168.9:853", "security-filter-dns.cleanbrowsing.org"},
+	{"94.140.14.14:853", "dns.adguard.com"},
 }
 
 func hasInternetConnection() bool {
-	client := http.Client{
-		Timeout: 10 * time.Second,
-	}
-	for _, server := range dnsServers {
-		resp, err := client.Get(server)
+	timeout := 3 * time.Second
+	for _, server := range dotServers {
+		conn, err := tls.DialWithDialer(
+			&net.Dialer{
+				Timeout: timeout,
+			},
+			"tcp",
+			server.IP,
+			&tls.Config{
+				ServerName:         server.ServerName,
+				InsecureSkipVerify: false,
+			},
+		)
+
 		if err == nil {
-			resp.Body.Close()
+			conn.Close()
 			return true
 		}
 	}
