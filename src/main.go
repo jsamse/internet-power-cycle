@@ -52,6 +52,7 @@ func turnOffShellyPlug(ip string) error {
 	body := map[string]any{
 		"id": 0,
 		"on": false,
+		"toggle_after": 20,
 	}
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
